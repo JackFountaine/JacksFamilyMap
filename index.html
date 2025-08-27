@@ -422,10 +422,12 @@
 
       // Nicely style circle markers
       function addLabeledMarker(lat, lng, label, markerColor = null) {
-        const fillColor = markerColor || getComputedStyle(document.documentElement)
+        const fillColor =
+          markerColor ||
+          getComputedStyle(document.documentElement)
             .getPropertyValue("--accent2")
             .trim();
-            
+
         const marker = L.circleMarker([lat, lng], {
           radius: 6,
           color: "#000",
@@ -446,8 +448,10 @@
 
       function addArcWithArrow(from, to, arcColor = null) {
         const arcPoints = greatCircleArc(from, to, 96);
-        
-        const lineColor = arcColor || getComputedStyle(document.documentElement)
+
+        const lineColor =
+          arcColor ||
+          getComputedStyle(document.documentElement)
             .getPropertyValue("--accent")
             .trim();
 
@@ -513,7 +517,12 @@
 
           // Place markers + labels for each location
           person.places.forEach((place) => {
-            addLabeledMarker(place.lat, place.lng, `${place.name} (${person.name})`, colors.marker);
+            addLabeledMarker(
+              place.lat,
+              place.lng,
+              `${place.name} (${person.name})`,
+              colors.marker
+            );
             allBounds.push([place.lat, place.lng]);
           });
 
@@ -535,20 +544,22 @@
         }
 
         // Update info panel for all family members view
-        document.getElementById("personName").textContent = "All Family Members";
-        document.getElementById("personDesc").textContent = 
-          `Showing journeys of all ${relatives.length} family members in different colors. Each person's path is displayed with their own unique color to help distinguish their individual journeys around the world.`;
+        document.getElementById("personName").textContent =
+          "All Family Members";
+        document.getElementById(
+          "personDesc"
+        ).textContent = `Showing journeys of all ${relatives.length} family members in different colors. Each person's path is displayed with their own unique color to help distinguish their individual journeys around the world.`;
       }
 
       // Populate dropdown and set initial view
       const selectEl = document.getElementById("personSelect");
-      
+
       // Add "Show All" option first
       const showAllOpt = document.createElement("option");
       showAllOpt.value = "all";
       showAllOpt.textContent = "Show All Family Members";
       selectEl.appendChild(showAllOpt);
-      
+
       relatives.forEach((p, idx) => {
         const opt = document.createElement("option");
         opt.value = idx;

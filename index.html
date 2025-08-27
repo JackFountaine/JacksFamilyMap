@@ -223,6 +223,7 @@
       const relatives = [
         {
           name: "Tim (Dad)",
+          colors: { marker: "#ff6b6b", arc: "#ff4757" }, // Red
           places: [
             { name: "Guildford, United Kingdom", lat: 51.2357, lng: -0.5621 },
             { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
@@ -233,6 +234,7 @@
         },
         {
           name: "Julia (Mum)",
+          colors: { marker: "#4ecdc4", arc: "#00d2d3" }, // Teal
           places: [
             { name: "Sacromento, United States", lat: 39.7138, lng: -121.7913 },
             { name: "Tackley, United Kingdom", lat: 51.2357, lng: -0.5621 },
@@ -244,6 +246,7 @@
         },
         {
           name: "Papa (Grandfather)",
+          colors: { marker: "#45b7d1", arc: "#3742fa" }, // Blue
           places: [
             { name: "Esher, United Kingdom", lat: 51.2357, lng: -0.5621 },
             { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
@@ -254,6 +257,7 @@
         },
         {
           name: "Nanna (Grandmother)",
+          colors: { marker: "#f9ca24", arc: "#f0932b" }, // Orange/Yellow
           places: [
             { name: "London, United Kingdom", lat: 51.5074, lng: -0.1278 },
             { name: "Kenya", lat: -1.286389, lng: 36.817223 },
@@ -269,6 +273,7 @@
         },
         {
           name: "Mimmi (Grandmother)",
+          colors: { marker: "#6c5ce7", arc: "#a29bfe" }, // Purple
           places: [
             { name: "Fielding, New Zealand", lat: -36.8485, lng: 174.7633 },
             { name: "London, United Kingdom", lat: 51.5074, lng: -0.1278 },
@@ -279,6 +284,7 @@
         },
         {
           name: "Grandpa Martin (Grandfather)",
+          colors: { marker: "#fd79a8", arc: "#e84393" }, // Pink
           places: [
             { name: "London, United Kingdom", lat: 51.5074, lng: -0.1278 },
             {
@@ -288,7 +294,7 @@
             },
             { name: "Oxford, United Kingdom", lat: 51.752, lng: -1.2577 },
           ],
-          description: `Grandpa Martin was born in the UK and aside from a stint working in California, he lived there for the whole of his life`,
+          description: `Grandpa Martin was born in the UK and aside from some years working in California, he lived there for his whole life`,
         },
       ];
 
@@ -362,22 +368,11 @@
       const decoratorsGroup = L.layerGroup().addTo(map);
 
       // ==========================
-      // 3) UTILITIES & COLOR PALETTE
+      // 3) UTILITIES
       // ==========================
 
-      // Color palette for different family members
-      const familyColors = [
-        { marker: "#ff6b6b", arc: "#ff4757" }, // Red
-        { marker: "#4ecdc4", arc: "#00d2d3" }, // Teal
-        { marker: "#45b7d1", arc: "#3742fa" }, // Blue
-        { marker: "#f9ca24", arc: "#f0932b" }, // Orange/Yellow
-        { marker: "#6c5ce7", arc: "#a29bfe" }, // Purple
-        { marker: "#fd79a8", arc: "#e84393" }, // Pink
-        { marker: "#00b894", arc: "#00cec9" }, // Green
-      ];
-
       // Compute great-circle arc points between two LatLngs (spherical linear interpolation)
-      function greatCircleArc(a, b, steps = 128) {
+      function greatCircleArc(a, b, steps = 128, offset = 0) {
         const toRad = (d) => (d * Math.PI) / 180;
         const toDeg = (r) => (r * 180) / Math.PI;
 
@@ -406,13 +401,49 @@
 
         const sinD = Math.sin(d);
         const pts = [];
+
         for (let i = 0; i <= steps; i++) {
           const t = i / steps;
           const A = Math.sin((1 - t) * d) / sinD;
           const B = Math.sin(t * d) / sinD;
-          const x = A * v1[0] + B * v2[0];
-          const y = A * v1[1] + B * v2[1];
-          const z = A * v1[2] + B * v2[2];
+          let x = A * v1[0] + B * v2[0];
+          let y = A * v1[1] + B * v2[1];
+          let z = A * v1[2] + B * v2[2];
+
+          // Apply subtle offset using a simple lateral displacement
+          if (offset !== 0) {
+            // Calculate distance between points to scale offset appropriately
+            const distance = d; // This is already the angular distance
+
+            // Create a subtle offset that's proportional to the distance
+            // Max offset is about 2% of the distance, and it's strongest at the midpoint
+            const maxOffset = distance * 0.02 * offset;
+            const offsetStrength = Math.sin(Math.PI * t); // Bell curve peaking at midpoint
+
+            // Calculate perpendicular direction (cross product of current point with north pole)
+            const north = [0, 0, 1];
+            const currentPoint = [x, y, z];
+            const perpendicular = [
+              currentPoint[1] * north[2] - currentPoint[2] * north[1],
+              currentPoint[2] * north[0] - currentPoint[0] * north[2],
+              currentPoint[0] * north[1] - currentPoint[1] * north[0],
+            ];
+
+            // Normalize perpendicular vector
+            const perpLength = Math.sqrt(
+              perpendicular[0] * perpendicular[0] +
+                perpendicular[1] * perpendicular[1] +
+                perpendicular[2] * perpendicular[2]
+            );
+
+            if (perpLength > 0) {
+              const offsetAmount = maxOffset * offsetStrength;
+              x += (perpendicular[0] / perpLength) * offsetAmount;
+              y += (perpendicular[1] / perpLength) * offsetAmount;
+              z += (perpendicular[2] / perpLength) * offsetAmount;
+            }
+          }
+
           const φ = Math.atan2(z, Math.hypot(x, y));
           const λ = Math.atan2(y, x);
           pts.push(L.latLng(toDeg(φ), toDeg(λ)));
@@ -452,8 +483,8 @@
         return marker;
       }
 
-      function addArcWithArrow(from, to, arcColor = null) {
-        const arcPoints = greatCircleArc(from, to, 96);
+      function addArcWithArrow(from, to, arcColor = null, offset = 0) {
+        const arcPoints = greatCircleArc(from, to, 96, offset);
 
         const lineColor =
           arcColor ||
@@ -482,10 +513,8 @@
 
         const bounds = [];
 
-        // Find the person's index to get their assigned color
-        const personIndex = relatives.findIndex((p) => p === person);
-        const colorIndex = personIndex % familyColors.length;
-        const colors = familyColors[colorIndex];
+        // Use the person's assigned colors
+        const colors = person.colors;
 
         // Place markers + labels for each location
         person.places.forEach((p) => {
@@ -504,9 +533,7 @@
           );
         }
 
-        if (bounds.length) {
-          map.fitBounds(bounds, { padding: [40, 40] });
-        }
+        // Keep map view consistent - don't auto-zoom
 
         // Update info panel
         document.getElementById("personName").textContent = person.name;
@@ -521,20 +548,37 @@
         clearLayers();
 
         const allBounds = [];
+        const uniqueLocations = new Map(); // Track unique locations to avoid overlapping labels
+        const arcCounts = new Map(); // Track how many arcs exist between city pairs
 
-        relatives.forEach((person, personIndex) => {
-          // Get color for this person (cycle through available colors)
-          const colorIndex = personIndex % familyColors.length;
-          const colors = familyColors[colorIndex];
+        relatives.forEach((person) => {
+          // Use the person's assigned colors
+          const colors = person.colors;
 
           // Place markers + labels for each location
           person.places.forEach((place) => {
-            addLabeledMarker(
-              place.lat,
-              place.lng,
-              `${place.name} (${person.name})`,
-              colors.marker
-            );
+            const locationKey = `${place.lat},${place.lng}`;
+
+            // Only add marker with label if this location hasn't been added yet
+            if (!uniqueLocations.has(locationKey)) {
+              addLabeledMarker(
+                place.lat,
+                place.lng,
+                place.name, // Just the city name, no person name
+                colors.marker
+              );
+              uniqueLocations.set(locationKey, place.name);
+            } else {
+              // Add marker without label for duplicate locations
+              const marker = L.circleMarker([place.lat, place.lng], {
+                radius: 6,
+                color: "#000",
+                weight: 2,
+                fillColor: colors.marker,
+                fillOpacity: 1,
+              }).addTo(markersGroup);
+            }
+
             allBounds.push([place.lat, place.lng]);
           });
 
@@ -542,18 +586,36 @@
           for (let i = 0; i < person.places.length - 1; i++) {
             const a = person.places[i];
             const b = person.places[i + 1];
+
+            // Create a consistent key for the arc regardless of direction
+            const arcKey = `${Math.min(a.lat, b.lat)},${Math.min(
+              a.lng,
+              b.lng
+            )}-${Math.max(a.lat, b.lat)},${Math.max(a.lng, b.lng)}`;
+
+            // Get current count for this arc and increment
+            const currentCount = arcCounts.get(arcKey) || 0;
+            arcCounts.set(arcKey, currentCount + 1);
+
+            // Calculate subtle offset based on arc count
+            // Use smaller values for more natural looking curves
+            let offset = 0;
+            if (currentCount > 0) {
+              // Alternating pattern with smaller increments: 0, 0.5, -0.5, 1, -1, 1.5, -1.5
+              const baseOffset = Math.ceil(currentCount / 2) * 0.5;
+              offset = baseOffset * (currentCount % 2 === 1 ? 1 : -1);
+            }
+
             addArcWithArrow(
               { lat: a.lat, lng: a.lng },
               { lat: b.lat, lng: b.lng },
-              colors.arc
+              colors.arc,
+              offset
             );
           }
         });
 
-        // Fit bounds to show all family members
-        if (allBounds.length) {
-          map.fitBounds(allBounds, { padding: [40, 40] });
-        }
+        // Keep map view consistent - don't auto-zoom
 
         // Update info panel for all family members view
         document.getElementById("personName").textContent =
@@ -590,8 +652,8 @@
         }
       });
 
-      // Start with "Show All" option selected
-      map.setView([20, 10], 2);
+      // Start with "Show All" option selected and a global view
+      map.setView([20, 0], 2); // Centered on equator, showing whole world
       if (relatives.length > 0) {
         selectEl.value = "all";
         renderAllPeople();
@@ -603,6 +665,7 @@
       // Copy this template and append to the `relatives` array above:
       // {
       //   name: "Full Name",
+      //   colors: { marker: "#hexcolor", arc: "#hexcolor" }, // Choose unique colors
       //   places: [
       //     { name: "City, Country (born)", lat: 0, lng: 0 },
       //     { name: "Move 1 City, Country", lat: 0, lng: 0 },

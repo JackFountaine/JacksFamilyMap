@@ -356,8 +356,19 @@
       const decoratorsGroup = L.layerGroup().addTo(map);
 
       // ==========================
-      // 3) UTILITIES
+      // 3) UTILITIES & COLOR PALETTE
       // ==========================
+
+      // Color palette for different family members
+      const familyColors = [
+        { marker: "#ff6b6b", arc: "#ff4757" }, // Red
+        { marker: "#4ecdc4", arc: "#00d2d3" }, // Teal
+        { marker: "#45b7d1", arc: "#3742fa" }, // Blue
+        { marker: "#f9ca24", arc: "#f0932b" }, // Orange/Yellow
+        { marker: "#6c5ce7", arc: "#a29bfe" }, // Purple
+        { marker: "#fd79a8", arc: "#e84393" }, // Pink
+        { marker: "#00b894", arc: "#00cec9" }, // Green
+      ];
 
       // Compute great-circle arc points between two LatLngs (spherical linear interpolation)
       function greatCircleArc(a, b, steps = 128) {
@@ -410,14 +421,16 @@
       }
 
       // Nicely style circle markers
-      function addLabeledMarker(lat, lng, label) {
+      function addLabeledMarker(lat, lng, label, markerColor = null) {
+        const fillColor = markerColor || getComputedStyle(document.documentElement)
+            .getPropertyValue("--accent2")
+            .trim();
+            
         const marker = L.circleMarker([lat, lng], {
           radius: 6,
           color: "#000",
           weight: 2,
-          fillColor: getComputedStyle(document.documentElement)
-            .getPropertyValue("--accent2")
-            .trim(),
+          fillColor: fillColor,
           fillOpacity: 1,
         }).addTo(markersGroup);
 
@@ -431,13 +444,15 @@
         return marker;
       }
 
-      function addArcWithArrow(from, to) {
+      function addArcWithArrow(from, to, arcColor = null) {
         const arcPoints = greatCircleArc(from, to, 96);
+        
+        const lineColor = arcColor || getComputedStyle(document.documentElement)
+            .getPropertyValue("--accent")
+            .trim();
 
         const poly = L.polyline(arcPoints, {
-          color: getComputedStyle(document.documentElement)
-            .getPropertyValue("--accent")
-            .trim(),
+          color: lineColor,
           weight: 3,
           opacity: 0.9,
         }).addTo(arcsGroup);
@@ -482,8 +497,58 @@
         document.getElementById("personDesc").textContent = person.description;
       }
 
+      // ==========================
+      // 5) RENDER ALL PEOPLE
+      // ==========================
+
+      function renderAllPeople() {
+        clearLayers();
+
+        const allBounds = [];
+
+        relatives.forEach((person, personIndex) => {
+          // Get color for this person (cycle through available colors)
+          const colorIndex = personIndex % familyColors.length;
+          const colors = familyColors[colorIndex];
+
+          // Place markers + labels for each location
+          person.places.forEach((place) => {
+            addLabeledMarker(place.lat, place.lng, `${place.name} (${person.name})`, colors.marker);
+            allBounds.push([place.lat, place.lng]);
+          });
+
+          // Draw curved arrows for each move in sequence
+          for (let i = 0; i < person.places.length - 1; i++) {
+            const a = person.places[i];
+            const b = person.places[i + 1];
+            addArcWithArrow(
+              { lat: a.lat, lng: a.lng },
+              { lat: b.lat, lng: b.lng },
+              colors.arc
+            );
+          }
+        });
+
+        // Fit bounds to show all family members
+        if (allBounds.length) {
+          map.fitBounds(allBounds, { padding: [40, 40] });
+        }
+
+        // Update info panel for all family members view
+        document.getElementById("personName").textContent = "All Family Members";
+        document.getElementById("personDesc").textContent = 
+          `Showing journeys of all ${relatives.length} family members in different colors. Each person's path is displayed with their own unique color to help distinguish their individual journeys around the world.`;
+      }
+
       // Populate dropdown and set initial view
       const selectEl = document.getElementById("personSelect");
+      
+      // Add "Show All" option first
+      const showAllOpt = document.createElement("option");
+      showAllOpt.value = "all";
+      showAllOpt.textContent = "Show All Family Members";
+      selectEl.appendChild(showAllOpt);
+      
       relatives.forEach((p, idx) => {
         const opt = document.createElement("option");
         opt.value = idx;
@@ -492,20 +557,25 @@
       });
 
       selectEl.addEventListener("change", (e) => {
-        const idx = Number(e.target.value);
-        const person = relatives[idx];
-        if (person) renderPerson(person);
+        const value = e.target.value;
+        if (value === "all") {
+          renderAllPeople();
+        } else {
+          const idx = Number(value);
+          const person = relatives[idx];
+          if (person) renderPerson(person);
+        }
       });
 
-      // Start centered globally, then render first person if available
+      // Start with "Show All" option selected
       map.setView([20, 10], 2);
       if (relatives.length > 0) {
-        selectEl.value = 0;
-        renderPerson(relatives[0]);
+        selectEl.value = "all";
+        renderAllPeople();
       }
 
       // ==========================
-      // 5) HOW TO ADD NEW RELATIVES
+      // 6) HOW TO ADD NEW RELATIVES
       // ==========================
       // Copy this template and append to the `relatives` array above:
       // {

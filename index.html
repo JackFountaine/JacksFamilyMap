@@ -161,6 +161,30 @@
         display: none;
       }
 
+      .push-pull-popup .leaflet-popup-content-wrapper {
+        background: rgba(10, 14, 20, 0.86);
+        color: var(--text);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .push-pull-popup .leaflet-popup-tip {
+        background: rgba(10, 14, 20, 0.86);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .push-pull-popup .leaflet-popup-content {
+        margin: 12px 16px;
+      }
+      .push-pull-popup .popup-text {
+        font-size: 14px;
+        color: #e5e9f1;
+        margin: 0;
+        line-height: 1.4;
+      }
+      .push-pull-popup .popup-text div + div {
+        margin-top: 4px;
+      }
+
       /* Small helper at bottom-left for instructions */
       .hint {
         position: absolute;
@@ -210,7 +234,6 @@
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
       crossorigin=""
     ></script>
-
     <script>
       // ==========================
       // 1) ADD / EDIT FAMILY DATA
@@ -225,10 +248,33 @@
           name: "Tim (Dad)",
           colors: { marker: "#ff6b6b", arc: "#ff4757" }, // Red
           places: [
-            { name: "Guildford, United Kingdom", lat: 51.2357, lng: -0.5621 },
-            { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
-            { name: "Oxford, United Kingdom", lat: 51.752, lng: -1.2577 },
-            { name: "Sydney, Australia", lat: -33.8688, lng: 151.2093 },
+            {
+              name: "Guildford, United Kingdom",
+              lat: 51.2357,
+              lng: -0.5621,
+              factors: "Born",
+            },
+            {
+              name: "Auckland, New Zealand",
+              lat: -36.8485,
+              lng: 174.7633,
+              factors:
+                "Push factors: Economy in the UK was bad\nPull factors: Timber mill job for his dad and an outdoor New Zealand lifestyle",
+            },
+            {
+              name: "Oxford, United Kingdom",
+              lat: 51.752,
+              lng: -1.2577,
+              factors:
+                "Push factors: Nil\nPull factors: PhD opportunity at Oxford and adventure of living abroad",
+            },
+            {
+              name: "Sydney, Australia",
+              lat: -33.8688,
+              lng: 151.2093,
+              factors:
+                "Push factors: Nil\nPull factors: Got a job in Sydney, great lifestyle and close to family in New Zealand",
+            },
           ],
           description: `Dad was born in the UK, moved to New Zealand with his family when he was 3 because his father got a job in a timber mill. He then moved to Oxford to study a PhD in neuroscience, married my mum in 2010, and finally moved to Sydney.`,
         },
@@ -236,11 +282,40 @@
           name: "Julia (Mum)",
           colors: { marker: "#4ecdc4", arc: "#00d2d3" }, // Teal
           places: [
-            { name: "Sacromento, United States", lat: 39.7138, lng: -121.7913 },
-            { name: "Tackley, United Kingdom", lat: 51.2357, lng: -0.5621 },
-            { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
-            { name: "Oxford, United Kingdom", lat: 51.752, lng: -1.2577 },
-            { name: "Sydney, Australia", lat: -33.8688, lng: 151.2093 },
+            {
+              name: "Sacramento, United States",
+              lat: 39.7138,
+              lng: -121.7913,
+              factors: "Born",
+            },
+            {
+              name: "Tackley, United Kingdom",
+              lat: 51.2357,
+              lng: -0.5621,
+              factors:
+                "Push factors: Nil\nPull factors: Jobs for her parents in Oxford and extended family in England",
+            },
+            {
+              name: "Auckland, New Zealand",
+              lat: -36.8485,
+              lng: 174.7633,
+              factors:
+                "Push factors: Looking for new experiences after medical training in the UK\nPull factors: Hospital role in Auckland, Uncle and Aunt in NZ and adventure in New Zealand",
+            },
+            {
+              name: "Oxford, United Kingdom",
+              lat: 51.752,
+              lng: -1.2577,
+              factors:
+                "Push factors: Nil\nPull factors: Chance to live near family again and be with Dad  in Oxford",
+            },
+            {
+              name: "Sydney, Australia",
+              lat: -33.8688,
+              lng: 151.2093,
+              factors:
+                "Push factors: Nil\nPull factors: Dad's job in Sydney and good weather",
+            },
           ],
           description: `Mum was born in Sacramento, California, and moved to Tackley, United Kingdom when she was 3. She grew up in England and then moved to New Zealand where she met my Dad while they were both doctors in a hospital. She moved back to Oxford with my Dad and then they settled in Australia because Dad got a job in Sydney. Mum then finished her training as an anaesthetist.`,
         },
@@ -248,10 +323,33 @@
           name: "Papa (Grandfather)",
           colors: { marker: "#45b7d1", arc: "#3742fa" }, // Blue
           places: [
-            { name: "Esher, United Kingdom", lat: 51.2357, lng: -0.5621 },
-            { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
-            { name: "London, United Kingdom", lat: 51.5074, lng: -0.1278 },
-            { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
+            {
+              name: "Esher, United Kingdom",
+              lat: 51.2357,
+              lng: -0.5621,
+              factors: "Born",
+            },
+            {
+              name: "Palmerston North, New Zealand",
+              lat: -40.3566,
+              lng: 174.7633,
+              factors:
+                "Push factors: Few chances to run his own farm in England\nPull factors: Affordable land in New Zealand, NZ government paid for his trip and the promise of adventure",
+            },
+            {
+              name: "London, United Kingdom",
+              lat: 51.5074,
+              lng: -0.1278,
+              factors:
+                "Push factors: Farming dream in New Zealand proved challenging\nPull factors: Family ties and job opportunity back in London",
+            },
+            {
+              name: "Auckland, New Zealand",
+              lat: -36.8485,
+              lng: 174.7633,
+              factors:
+                "Push factors: Economy in the UK was bad\nPull factors: Offer of a timber mill job",
+            },
           ],
           description: `Papa was born near London. He moved to New Zealand when he was only 18 on a ship because he wanted to be a farmer. He eventually moved back to London and then back to New Zealand for a job in a timber mill.`,
         },
@@ -259,15 +357,40 @@
           name: "Nanna (Grandmother)",
           colors: { marker: "#f9ca24", arc: "#f0932b" }, // Orange/Yellow
           places: [
-            { name: "London, United Kingdom", lat: 51.5074, lng: -0.1278 },
-            { name: "Kenya", lat: -1.286389, lng: 36.817223 },
-            { name: "Oxford, United Kingdom", lat: 51.5074, lng: -0.1278 },
+            {
+              name: "London, United Kingdom",
+              lat: 51.5074,
+              lng: -0.1278,
+              factors: "Born",
+            },
+            {
+              name: "Kenya",
+              lat: -1.286389,
+              lng: 36.817223,
+              factors:
+                "Push factors: Post-war Britain offered little land for her family\nPull factors: Coffee farm opportunity in Kenya",
+            },
+            {
+              name: "London, United Kingdom",
+              lat: 51.5074, 
+              lng: -0.1278,
+              factors:
+                "Push factors: Poor schools in Kenya\nPull factors: Good education opportunities in England",
+            },
             {
               name: "San Francisco, United States",
               lat: 37.7749,
               lng: -122.4194,
+              factors:
+                "Push factors: Nil\nPull factors: Job at university in California",
             },
-            { name: "Oxford, United Kingdom", lat: 51.5074, lng: -0.1278 },
+            {
+              name: "Oxford, United Kingdom",
+              lat: 51.752,
+              lng: -1.2577,
+              factors:
+                "Push factors: Nil\nPull factors: Professorship in Oxford and being near extended family",
+            },
           ],
           description: `Nanna was born in England but her family moved to Kenya to be coffee farmers. She went to boarding school back in England and eventually moved back when she went to university (where she got a PhD in entomology - insects!) She then moved with Grandpa Martin to the USA and then came back to live in Oxford because Grandpa Martin was a Professor there.`,
         },
@@ -275,10 +398,27 @@
           name: "Mimmi (Grandmother)",
           colors: { marker: "#6c5ce7", arc: "#a29bfe" }, // Purple
           places: [
-            { name: "Fielding, New Zealand", lat: -36.8485, lng: 174.7633 },
-            { name: "London, United Kingdom", lat: 51.5074, lng: -0.1278 },
-            { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
-            { name: "Fielding, New Zealand", lat: -36.8485, lng: 174.7633 },
+            {
+              name: "Palmerston North, New Zealand",
+              lat: -40.3566,
+              lng: 174.7633,
+              factors: "Born",
+            },
+            {
+              name: "London, United Kingdom",
+              lat: 51.5074,
+              lng: -0.1278,
+              factors:
+                "Push factors: Nil\nPull factors: Papa's job in London",
+            },
+            {
+              name: "Auckland, New Zealand",
+              lat: -36.8485,
+              lng: 174.7633,
+              factors:
+                "Push factors: Recession in the UK\nPull factors: Building a life with Papa and living near New Zealand family",
+            },
+    
           ],
           description: `Mimmi was born in New Zealand where she grew up on a sheep farm. She met Papa and they moved to England for a while and then back to New Zealand where they live now.`,
         },
@@ -286,13 +426,26 @@
           name: "Grandpa Martin (Grandfather)",
           colors: { marker: "#fd79a8", arc: "#e84393" }, // Pink
           places: [
-            { name: "London, United Kingdom", lat: 51.5074, lng: -0.1278 },
+            {
+              name: "London, United Kingdom",
+              lat: 51.5074,
+              lng: -0.1278,
+              factors: "Born",
+            },
             {
               name: "San Francisco, United States",
               lat: 37.7749,
               lng: -122.4194,
+              factors:
+                "Push factors: Wanted to broaden his academic network\nPull factors: Visiting professorship in California and tech innovation scene",
             },
-            { name: "Oxford, United Kingdom", lat: 51.752, lng: -1.2577 },
+            {
+              name: "Oxford, United Kingdom",
+              lat: 51.752,
+              lng: -1.2577,
+              factors:
+                "Push factors: Temporary US research stint finished\nPull factors: Permanent chair at Oxford and a historic college community",
+            },
           ],
           description: `Grandpa Martin was born in the UK and aside from some years working in California, he lived there for his whole life.`,
         },
@@ -300,10 +453,33 @@
           name: "Auntie Caroline",
           colors: { marker: "#dda0dd", arc: "#d8bfd8" }, // Light Purple
           places: [
-            { name: "Guildford, United Kingdom", lat: 51.2357, lng: -0.5621 },
-            { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
-            { name: "Dubai, United Arab Emirates", lat: 25.276987, lng: 55.296233 },
-            { name: "Auckland, New Zealand", lat: -36.8485, lng: 174.7633 },
+            {
+              name: "Guildford, United Kingdom",
+              lat: 51.2357,
+              lng: -0.5621,
+              factors: "Born",
+            },
+            {
+              name: "Auckland, New Zealand",
+              lat: -36.8485,
+              lng: 174.7633,
+              factors:
+                "Push factors: Recession in the UK\nPull factors: Papa's job in NZ and the promise of a better lifestyle",
+            },
+            {
+              name: "Dubai, United Arab Emirates",
+              lat: 25.276987,
+              lng: 55.296233,
+              factors:
+                "Push factors: Nil\nPull factors: Tax-free salary and global adventure and great job offer in Dubai",
+            },
+            {
+              name: "Auckland, New Zealand",
+              lat: -36.8485,
+              lng: 174.7633,
+              factors:
+                "Push factors: Far from family and hot desert climate\nPull factors: Returning to New Zealand to start a family closer to parents",
+            },
           ],
           description: `Caroline was born in the UK and grew up in New Zealand. She then moved to Dubai for her first job after university and then back to New Zealand to start her family.`,
         },
@@ -311,8 +487,19 @@
           name: "Auntie Jennifer",
           colors: { marker: "#00b894", arc: "#00a085" }, // Green
           places: [
-            { name: "Sacramento, United States", lat: 39.7138, lng: -121.7913 },
-            { name: "Oxford, United Kingdom", lat: 51.752, lng: -1.2577 },
+            {
+              name: "Sacramento, United States",
+              lat: 39.7138,
+              lng: -121.7913,
+              factors: "Born",
+            },
+            {
+              name: "Oxford, United Kingdom",
+              lat: 51.752,
+              lng: -1.2577,
+              factors:
+                "Push factors: Nil\nPull factors: Parent's job offers in Oxford",
+            },
           ],
           description: `Jennifer was born in California and moved to Oxford because her parents got a job there.`,
         },
@@ -477,6 +664,43 @@
         decoratorsGroup.clearLayers();
       }
 
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function createPopupContent(factors) {
+        if (!factors) return "";
+
+        const trimmed = String(factors).trim();
+        if (!trimmed) return "";
+
+        if (trimmed.toLowerCase() === "born") {
+          return '<div class="popup-text"><strong>Born</strong></div>';
+        }
+
+        const lines = trimmed
+          .split(/\n+/)
+          .map((line) => line.trim())
+          .filter(Boolean);
+
+        const htmlLines = lines.map((line) => {
+          const match = line.match(/^(Push factors:|Pull factors:)(.*)$/i);
+          if (match) {
+            const label = escapeHtml(match[1]);
+            const value = escapeHtml(match[2].trim());
+            return `<div><strong>${label}</strong> ${value}</div>`;
+          }
+          return `<div>${escapeHtml(line)}</div>`;
+        });
+
+        return '<div class="popup-text">' + htmlLines.join("") + "</div>";
+      }
+
       // Nicely style circle markers
       function addLabeledMarker(lat, lng, label, markerColor = null) {
         const fillColor =
@@ -518,8 +742,70 @@
           opacity: 0.9,
         }).addTo(arcsGroup);
 
-        // Note: Arrowhead functionality removed due to plugin loading issues
-        // The polyline will still show the journey path without arrowheads
+        // Build a larger arrowhead centred part-way along the arc to show direction clearly
+        if (arcPoints.length >= 2) {
+          let tipIndex = Math.floor(arcPoints.length / 2);
+          if (tipIndex <= 0) tipIndex = 1;
+          if (tipIndex >= arcPoints.length) tipIndex = arcPoints.length - 1;
+
+          const tipLatLng = arcPoints[tipIndex];
+          const prevLatLng = arcPoints[tipIndex - 1];
+
+          const tipPoint = map.options.crs.project(tipLatLng);
+          const prevPoint = map.options.crs.project(prevLatLng);
+
+          const vx = tipPoint.x - prevPoint.x;
+          const vy = tipPoint.y - prevPoint.y;
+          const mag = Math.hypot(vx, vy);
+
+          if (mag > 0) {
+            const nx = vx / mag;
+            const ny = vy / mag;
+
+            const totalDistance = Math.max(
+              map.distance([from.lat, from.lng], [to.lat, to.lng]),
+              1
+            );
+            const baseLength = Math.min(
+              Math.max(totalDistance * 0.18, 12000),
+              500000
+            );
+            const basePoint = L.point(
+              tipPoint.x - nx * baseLength,
+              tipPoint.y - ny * baseLength
+            );
+
+            const wingScale = baseLength * 0.5;
+            const perpX = -ny * wingScale;
+            const perpY = nx * wingScale;
+
+            const leftPoint = L.point(
+              basePoint.x + perpX,
+              basePoint.y + perpY
+            );
+            const rightPoint = L.point(
+              basePoint.x - perpX,
+              basePoint.y - perpY
+            );
+
+            const arrowHead = L.polygon(
+              [
+                tipLatLng,
+                map.options.crs.unproject(leftPoint),
+                map.options.crs.unproject(rightPoint),
+              ],
+              {
+                color: lineColor,
+                fillColor: lineColor,
+                fillOpacity: 0.9,
+                weight: 0,
+                interactive: false,
+              }
+            );
+
+            arrowHead.addTo(decoratorsGroup);
+          }
+        }
 
         return poly;
       }
@@ -537,10 +823,37 @@
         const colors = person.colors;
 
         // Place markers + labels for each location
-        person.places.forEach((p) => {
-          addLabeledMarker(p.lat, p.lng, p.name, colors.marker);
+        let firstMarker = null;
+        let firstPopupReady = false;
+
+        person.places.forEach((p, index) => {
+          const marker = addLabeledMarker(p.lat, p.lng, p.name, colors.marker);
+
+          if (p.factors) {
+            const popupContent = createPopupContent(p.factors);
+            if (popupContent) {
+              marker.bindPopup(popupContent, {
+                className: "push-pull-popup",
+                closeButton: true,
+                autoPan: true,
+              });
+
+              if (index === 0) {
+                firstPopupReady = true;
+              }
+            }
+          }
+
+          if (index === 0) {
+            firstMarker = marker;
+          }
+
           bounds.push([p.lat, p.lng]);
         });
+
+        if (firstMarker && firstPopupReady) {
+          firstMarker.openPopup();
+        }
 
         // Draw curved arrows for each move in sequence
         for (let i = 0; i < person.places.length - 1; i++) {
